@@ -10,6 +10,7 @@
     
     <style>
         :root {
+            color-scheme: light dark;
             --bg-main: #000000;
             --bg-card: #0d0d0d;
             --sidebar-bg: #000000;
@@ -18,9 +19,8 @@
             --text-muted: #a0a0a0;
             --border-color: #222222;
             --input-bg: #151515;
-            --f-lucro-azul: #00a2ff;
-            --f-lucro-verde: #00ff88;
-            --f-gasto-amarelo: #ffcc00;
+            --accent: #00a2ff;
+            --profit-green: #00ff88;
         }
 
         body.light-theme {
@@ -37,13 +37,14 @@
         body { 
             background-color: var(--bg-main); color: var(--text-main);
             font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh;
-            display: flex; flex-direction: column; transition: background 0.3s;
+            display: flex; flex-direction: column; transition: all 0.3s ease;
         }
 
         .top-menu-bar {
             position: fixed; top: 0; left: 0; width: 100%; height: 60px;
             background: var(--top-bar-bg); border-bottom: 1px solid var(--border-color);
             z-index: 1100; display: flex; align-items: center; padding: 0 20px;
+            justify-content: space-between;
         }
 
         #menu-toggle {
@@ -60,57 +61,70 @@
         }
         #sidebar.active { transform: translateX(0); }
 
-        #sidebar ul li a, .theme-btn { 
+        #sidebar ul li a { 
             padding: 15px 24px; display: flex; align-items: center;
             color: var(--text-muted); text-decoration: none; font-weight: 500;
-            border: none; background: transparent; width: 100%;
         }
         #sidebar ul li a:hover, #sidebar ul li a.active { background: rgba(128,128,128,0.1); color: var(--text-main); }
 
-        #main-wrapper { 
-            flex: 1; padding: 20px; padding-top: 85px; 
-            max-width: 1400px; margin: 0 auto; width: 100%;
-        }
-
+        #main-wrapper { flex: 1; padding: 20px; padding-top: 85px; max-width: 1400px; margin: 0 auto; width: 100%; }
         .page-header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
-
+        
         .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 24px; }
         .stat-card { padding: 20px; }
         .stat-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .stat-value { font-size: 1.5rem; font-weight: 800; }
 
-        .txt-lucro-azul { color: var(--f-lucro-azul); }
-        .txt-lucro-verde { color: var(--f-lucro-verde); }
-        .txt-gasto-amarelo { color: var(--f-gasto-amarelo); }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .switch-container { display: flex; align-items: center; gap: 10px; }
+        .switch-container span { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        
+        .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(14px); }
 
-        .form-control, .form-select { background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; }
+        #chartContainer { transition: opacity 0.4s ease, transform 0.4s ease; opacity: 0; transform: translateY(10px); pointer-events: none; }
+        #chartContainer.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
         .btn-action { background: var(--text-main); color: var(--bg-main); font-weight: 700; border-radius: 8px; padding: 12px; border: none; width: 100%; text-transform: uppercase; }
+        .form-control, .form-select { background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; }
 
-        .system-footer { margin-top: 50px; padding: 40px 20px; border-top: 1px solid var(--border-color); text-align: center; }
-        .btn-reset-final { background: transparent; border: 1px solid #333; color: #555; padding: 8px 20px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; }
-        .btn-reset-final:hover { border-color: #ff4d4d; color: #ff4d4d; }
+        /* Estilo da Tabela */
+        .table { color: var(--text-main); }
+        .table thead th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+        .table td { vertical-align: middle; border-bottom: 1px solid var(--border-color); padding: 15px 10px; }
+        .text-profit { color: var(--profit-green); font-weight: 700; }
 
-        @media (min-width: 992px) { #sidebar.active ~ #main-wrapper, #sidebar.active ~ .system-footer { padding-left: 280px; } }
+        @media (min-width: 992px) { #sidebar.active ~ #main-wrapper { padding-left: 280px; } }
     </style>
 </head>
 <body>
 
     <div class="top-menu-bar">
-        <div id="menu-toggle" onclick="toggleSidebar()"><i id="menu-icon" class="fas fa-bars"></i></div>
-        <div class="ms-3 fw-bold small" style="letter-spacing: 2px;">BLACKSYSTEM</div>
+        <div class="d-flex align-items-center">
+            <div id="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+            <div class="ms-3 fw-bold small" style="letter-spacing: 2px;">BLACKSYSTEM</div>
+        </div>
+        <div class="switch-container">
+            <span>Tema Claro</span>
+            <label class="switch"><input type="checkbox" id="themeSwitch" onchange="manualThemeToggle()"><span class="slider"></span></label>
+        </div>
     </div>
 
     <nav id="sidebar">
-        <div class="p-4 fw-bold border-bottom border-secondary border-opacity-25">MENU</div>
+        <div class="p-4 fw-bold border-bottom border-secondary border-opacity-25 text-muted">NAVEGAÇÃO</div>
         <ul class="list-unstyled mb-0">
-            <li><a href="#" onclick="showSection('home')" class="nav-item active"><i class="fas fa-chart-line"></i> DASHBOARD</a></li>
-            <li><a href="#" onclick="showSection('vendas')" class="nav-item"><i class="fas fa-shopping-cart"></i> VENDAS</a></li>
-            <li><a href="#" onclick="showSection('estoque')" class="nav-item"><i class="fas fa-boxes-stacked"></i> ESTOQUE</a></li>
-            <li><a href="#" onclick="showSection('cadastro')" class="nav-item"><i class="fas fa-plus-circle"></i> CADASTRAR</a></li>
+            <li><a href="#" onclick="showSection('home')" class="nav-item active"><i class="fas fa-chart-line me-2"></i> DASHBOARD</a></li>
+            <li><a href="#" onclick="showSection('vendas')" class="nav-item"><i class="fas fa-shopping-cart me-2"></i> VENDAS</a></li>
+            <li><a href="#" onclick="showSection('estoque')" class="nav-item"><i class="fas fa-boxes-stacked me-2"></i> ESTOQUE</a></li>
+            <li><a href="#" onclick="showSection('cadastro')" class="nav-item"><i class="fas fa-plus-circle me-2"></i> CADASTRAR</a></li>
         </ul>
-        <button class="theme-btn border-top border-secondary border-opacity-25 mt-2" onclick="toggleTheme()">
-            <i id="theme-icon" class="fas fa-moon"></i> <span id="theme-text">MODO ESCURO</span>
-        </button>
+        <div class="p-4 mt-auto border-top border-secondary border-opacity-25 text-center">
+            <button class="btn btn-sm btn-outline-danger w-100" onclick="limparSistema()" style="font-size: 0.7rem; font-weight: 700;">RESETAR SISTEMA</button>
+        </div>
     </nav>
 
     <div id="main-wrapper">
@@ -121,45 +135,34 @@
 
         <section id="home" class="section">
             <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card">
-                        <span class="stat-label">Faturamento</span>
-                        <div class="stat-value txt-lucro-verde" id="dash-fat">R$ 0,00</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card">
-                        <span class="stat-label">Lucro Líquido</span>
-                        <div class="stat-value txt-lucro-azul" id="dash-lucro">R$ 0,00</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card">
-                        <span class="stat-label">Total Saídas</span>
-                        <div class="stat-value" id="dash-vendas-count">0</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card">
-                        <span class="stat-label">Gastos Totais</span>
-                        <div class="stat-value txt-gasto-amarelo" id="dash-custos">R$ 0,00</div>
-                    </div>
-                </div>
+                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Faturamento</span><div class="stat-value text-success" id="dash-fat">R$ 0,00</div></div></div>
+                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Lucro Líquido</span><div class="stat-value text-info" id="dash-lucro">R$ 0,00</div></div></div>
+                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Total Saídas</span><div class="stat-value" id="dash-vendas-count">0</div></div></div>
+                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Gastos Totais</span><div class="stat-value text-warning" id="dash-custos">R$ 0,00</div></div></div>
             </div>
+            
             <div class="card p-4">
-                <h6 class="fw-bold mb-4 text-muted">HISTÓRICO DE DESEMPENHO (LUCRO)</h6>
-                <div style="height: 320px; position: relative;">
-                    <canvas id="chartLinha"></canvas>
+                <div class="chart-header">
+                    <div class="switch-container"><span>Mostrar Lucro</span><label class="switch"><input type="checkbox" id="toggleChart" onchange="updateChartVisibility()"><span class="slider"></span></label></div>
+                    <h6 class="fw-bold m-0 text-muted small"></h6>
                 </div>
+                <div id="chartContainer" style="height: 320px;"><canvas id="chartLinha"></canvas></div>
             </div>
         </section>
 
         <section id="estoque" class="section d-none">
-            <div class="card overflow-hidden">
+            <div class="card p-3">
                 <div class="table-responsive">
-                    <table class="table" id="tbl-estoque">
+                    <table class="table table-hover mb-0" id="tbl-estoque">
                         <thead>
-                            <tr><th>Item</th><th>Disponível</th><th>Saídas</th><th class="txt-gasto-amarelo">Custo Un.</th><th class="txt-lucro-verde">Venda Un.</th><th>Margem</th></tr>
+                            <tr>
+                                <th>Produto</th>
+                                <th class="text-center">Disponível</th>
+                                <th class="text-center">Saídas</th>
+                                <th>Custo</th>
+                                <th>Venda</th>
+                                <th class="text-end">Margem (%)</th>
+                            </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -168,29 +171,13 @@
         </section>
 
         <section id="vendas" class="section d-none">
-            <div class="card p-4 mx-auto" style="max-width: 450px;">
-                <h5 class="fw-bold mb-4">Lançar Venda</h5>
-                <select id="v_prod" class="form-select mb-3"></select>
-                <input type="number" id="v_qtd" class="form-control mb-4" value="1" min="1">
-                <button class="btn-action" onclick="finalizarVenda()">Confirmar Venda</button>
-            </div>
+            <div class="card p-4 mx-auto" style="max-width: 400px;"><h5 class="fw-bold mb-3 text-center">Lançar Venda</h5><label class="small text-muted mb-1">Escolha o Item</label><select id="v_prod" class="form-select mb-3"></select><label class="small text-muted mb-1">Quantidade</label><input type="number" id="v_qtd" class="form-control mb-3" value="1"><button class="btn-action" onclick="finalizarVenda()">Confirmar Venda</button></div>
         </section>
 
         <section id="cadastro" class="section d-none">
-            <div class="card p-4 mx-auto" style="max-width: 450px;">
-                <h5 class="fw-bold mb-4">Novo Produto</h5>
-                <input type="text" id="c_nome" class="form-control mb-3" placeholder="Nome">
-                <input type="number" id="c_custo" class="form-control mb-3" placeholder="Custo">
-                <input type="number" id="c_venda" class="form-control mb-3" placeholder="Venda">
-                <input type="number" id="c_est" class="form-control mb-4" placeholder="Estoque Inicial">
-                <button class="btn-action" onclick="cadastrarItem()">Cadastrar</button>
-            </div>
+            <div class="card p-4 mx-auto" style="max-width: 400px;"><h5 class="fw-bold mb-3 text-center">Novo Produto</h5><input type="text" id="c_nome" class="form-control mb-2" placeholder="Nome"><input type="number" id="c_custo" class="form-control mb-2" placeholder="Custo (R$)"><input type="number" id="c_venda" class="form-control mb-2" placeholder="Venda (R$)"><input type="number" id="c_est" class="form-control mb-3" placeholder="Estoque Inicial"><button class="btn-action" onclick="cadastrarItem()">Cadastrar</button></div>
         </section>
     </div>
-
-    <footer class="system-footer">
-        <button class="btn-reset-final" onclick="limparSistema()">Resetar Base de Dados Geral</button>
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -198,27 +185,33 @@
         let vendas = JSON.parse(localStorage.getItem('pp_vendas')) || [];
         let chartL = null;
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const isLight = document.body.classList.contains('light-theme');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            document.getElementById('theme-icon').className = isLight ? 'fas fa-sun' : 'fas fa-moon';
-            document.getElementById('theme-text').innerText = isLight ? 'MODO CLARO' : 'MODO ESCURO';
+        // TEMA
+        const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
+        function applyTheme(isLight) {
+            if (isLight) document.body.classList.add('light-theme');
+            else document.body.classList.remove('light-theme');
+            document.getElementById('themeSwitch').checked = isLight;
             if(chartL) initChart();
         }
-        if(localStorage.getItem('theme') === 'light') toggleTheme();
+        function manualThemeToggle() { applyTheme(document.getElementById('themeSwitch').checked); }
+        applyTheme(themeMedia.matches);
+        themeMedia.addEventListener('change', (e) => applyTheme(e.matches));
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+        function updateChartVisibility() {
+            const isChecked = document.getElementById('toggleChart').checked;
+            const container = document.getElementById('chartContainer');
+            if (isChecked) { container.classList.add('visible'); initChart(); }
+            else { container.classList.remove('visible'); }
         }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.add('d-none'));
             document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
             document.getElementById(id).classList.remove('d-none');
             document.getElementById('page-title').innerText = id.toUpperCase();
-            if(window.innerWidth < 992) toggleSidebar();
+            if(window.innerWidth < 992) document.getElementById('sidebar').classList.remove('active');
             refresh();
         }
 
@@ -226,9 +219,9 @@
             const nome = document.getElementById('c_nome').value;
             const custo = parseFloat(document.getElementById('c_custo').value) || 0;
             const venda = parseFloat(document.getElementById('c_venda').value) || 0;
-            const estoque = parseInt(document.getElementById('c_est').value) || 0;
+            const est = parseInt(document.getElementById('c_est').value) || 0;
             if(nome) {
-                produtos.push({ id: Date.now(), nome, custo, venda, estoque });
+                produtos.push({ id: Date.now(), nome, custo, venda, estoque: est });
                 localStorage.setItem('pp_prods', JSON.stringify(produtos));
                 showSection('home');
             }
@@ -239,7 +232,7 @@
             const qtd = parseInt(document.getElementById('v_qtd').value);
             const p = produtos.find(x => x.id === id);
             if(p && p.estoque >= qtd) {
-                vendas.push({ prodId: id, total: p.venda * qtd, custo: p.custo * qtd, lucro: (p.venda - p.custo) * qtd, qtd: qtd, data: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+                vendas.push({ prodId: id, lucro: (p.venda - p.custo) * qtd, total: p.venda * qtd, custo: p.custo * qtd, qtd: qtd, data: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
                 p.estoque -= qtd;
                 localStorage.setItem('pp_prods', JSON.stringify(produtos));
                 localStorage.setItem('pp_vendas', JSON.stringify(vendas));
@@ -248,30 +241,38 @@
         }
 
         function refresh() {
+            let f=0, l=0, c=0, q=0;
+            vendas.forEach(v => { f += v.total; l += v.lucro; c += v.custo; q += v.qtd; });
+            document.getElementById('dash-fat').innerText = `R$ ${f.toFixed(2)}`;
+            document.getElementById('dash-lucro').innerText = `R$ ${l.toFixed(2)}`;
+            document.getElementById('dash-vendas-count').innerText = q;
+            document.getElementById('dash-custos').innerText = `R$ ${c.toFixed(2)}`;
+            
             const tbody = document.querySelector('#tbl-estoque tbody');
             if(tbody) {
                 tbody.innerHTML = '';
                 produtos.forEach(p => {
-                    const totalVendido = vendas.filter(v => v.prodId === p.id).reduce((sum, v) => sum + v.qtd, 0);
-                    const margem = p.custo > 0 ? (((p.venda - p.custo) / p.custo) * 100).toFixed(0) : 0;
-                    tbody.innerHTML += `<tr><td>${p.nome}</td><td>${p.estoque}</td><td>${totalVendido}</td><td class="txt-gasto-amarelo">R$ ${p.custo.toFixed(2)}</td><td class="txt-lucro-verde">R$ ${p.venda.toFixed(2)}</td><td>${margem}%</td></tr>`;
+                    const saidas = vendas.filter(v => v.prodId === p.id).reduce((acc, curr) => acc + curr.qtd, 0);
+                    const margem = p.custo > 0 ? (((p.venda - p.custo) / p.custo) * 100).toFixed(1) : "0";
+                    
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${p.nome}</strong></td>
+                        <td class="text-center">${p.estoque}</td>
+                        <td class="text-center text-muted">${saidas}</td>
+                        <td>R$ ${p.custo.toFixed(2)}</td>
+                        <td>R$ ${p.venda.toFixed(2)}</td>
+                        <td class="text-end text-profit">${margem}%</td>
+                    </tr>`;
                 });
             }
 
             const sel = document.getElementById('v_prod');
             if(sel) {
                 sel.innerHTML = '<option value="">Selecionar...</option>';
-                produtos.forEach(p => { if(p.estoque > 0) sel.innerHTML += `<option value="${p.id}">${p.nome}</option>`; });
+                produtos.forEach(p => { if(p.estoque > 0) sel.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} disp.)</option>`; });
             }
 
-            let f=0, l=0, c=0, q=0;
-            vendas.forEach(v => { f += v.total; l += v.lucro; c += v.custo; q += v.qtd; });
-            
-            document.getElementById('dash-fat').innerText = `R$ ${f.toFixed(2)}`;
-            document.getElementById('dash-lucro').innerText = `R$ ${l.toFixed(2)}`;
-            document.getElementById('dash-vendas-count').innerText = q;
-            document.getElementById('dash-custos').innerText = `R$ ${c.toFixed(2)}`;
-            initChart();
+            if(document.getElementById('toggleChart').checked) initChart();
         }
 
         function initChart() {
@@ -279,49 +280,37 @@
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
             const isLight = document.body.classList.contains('light-theme');
-            
             if(chartL) chartL.destroy();
-
-            // Só gera dados se houver vendas
-            const labels = vendas.length > 0 ? vendas.map(v => v.data).slice(-10) : ['Sem dados'];
-            const dataLucro = vendas.length > 0 ? vendas.map(v => v.lucro).slice(-10) : [0];
-
             chartL = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: vendas.map(v => v.data).slice(-10),
                     datasets: [{
-                        label: 'Lucro',
-                        data: dataLucro,
+                        data: vendas.map(v => v.lucro).slice(-10),
                         borderColor: '#00a2ff',
-                        backgroundColor: 'rgba(0, 162, 255, 0.1)',
                         borderWidth: 3,
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 4
+                        backgroundColor: 'rgba(0, 162, 255, 0.05)',
+                        pointRadius: 4,
+                        pointBackgroundColor: '#00a2ff'
                     }]
                 },
                 options: {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: isLight ? '#e0e0e0' : '#1a1a1a' },
-                            ticks: { color: isLight ? '#666' : '#888' }
-                        },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { color: isLight ? '#666' : '#888' }
-                        }
+                        y: { grid: { color: isLight ? '#e0e0e0' : '#1a1a1a' }, ticks: { color: isLight ? '#666' : '#888' } },
+                        x: { grid: { display: false }, ticks: { color: isLight ? '#666' : '#888' } }
                     }
                 }
             });
         }
 
-        function limparSistema() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
+        function limparSistema() { if(confirm("Deseja resetar todos os dados?")) { localStorage.clear(); location.reload(); } }
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-br', { weekday:'long', day:'numeric', month:'long' });
-        window.onload = refresh;
+        window.onload = () => { document.getElementById('toggleChart').checked = false; refresh(); };
     </script>
 </body>
-  </html>
+    </html>
+    
