@@ -23,6 +23,7 @@
             --chart-expense: #ffdb4d;
             --danger: #ff4d4d;
             --logo-primary: #ffffff;
+            --warning-light: #ffc107;
         }
 
         body.light-theme {
@@ -41,7 +42,7 @@
             color: var(--font-20-white);
             font-family: 'Inter', sans-serif; 
             margin: 0; transition: all 0.3s ease;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Mantém a performance evitando scroll horizontal indesejado */
         }
 
         .form-control, .form-select {
@@ -67,16 +68,24 @@
             justify-content: space-between;
         }
 
+        /* CORREÇÃO DE RESPONSIVIDADE NA SIDEBAR */
         #sidebar { 
             background: var(--bg-sidebar-gray); 
-            height: 100vh; width: 260px; position: fixed; 
+            position: fixed; 
+            top: 0; 
+            bottom: 0; 
+            width: 260px; 
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            z-index: 1050; left: 0; top: 0;
+            z-index: 1050; left: 0;
             border-right: 1px solid var(--border-ui); 
             padding-top: 20px;
-            transform: translateX(-100%);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%); 
+            overflow-y: auto; 
         }
         #sidebar.active { transform: translateX(0); }
+        #sidebar ul { flex-grow: 1; margin-bottom: 0; }
         #sidebar ul li a { 
             padding: 15px 24px; display: flex; align-items: center; 
             color: var(--font-20-white); text-decoration: none; font-weight: 600; 
@@ -123,7 +132,9 @@
         .preco-antigo { text-decoration: line-through; color: var(--font-5-gray); font-size: 0.8rem; margin-right: 8px; }
 
         .table { color: inherit !important; font-size: 0.85rem; }
-        .td-numeric { font-weight: 600; font-size: 0.85rem; }
+        /* Alinhamento de números na tabela */
+        .td-numeric { font-weight: 600; font-size: 0.85rem; text-align: right; }
+        
         .badge-qtd { background: none !important; border: none !important; color: inherit !important; font-weight: 700; font-size: 0.85rem; padding: 0; }
 
         .modal-overlay {
@@ -153,16 +164,106 @@
         input:checked + .slider { background-color: var(--accent-blue); }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        #chartContainer { height: 0; opacity: 0; overflow: hidden; transition: 0.4s ease; }
-        #chartContainer.visible { height: 300px; opacity: 1; margin-top: 20px; }
+        /* --- MUDANÇA PARA GRÁFICO EXPANSÍVEL E SCROLL HORIZONTAL --- */
+        #chartContainer { 
+            height: 300px; 
+            overflow-x: auto; 
+            overflow-y: hidden;
+            margin-top: 20px;
+        }
+        
+        @media print {
+            #chartContainer {
+                overflow-x: visible; 
+                height: auto;
+            }
+        }
+        /* --- FIM MUDANÇA GRÁFICO --- */
 
-        #main-wrapper { padding: 20px; padding-top: 85px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        #main-wrapper { 
+            padding: 20px; 
+            padding-top: 85px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            width: 100%; 
+            transition: filter 0.3s ease; 
+        }
 
-        @media (min-width: 992px) { #sidebar.active ~ #main-wrapper { padding-left: 280px; } }
+        #license-status-card {
+            background: var(--bg-card-75);
+            border: 1px solid var(--border-ui);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px;
+            font-size: 0.75rem;
+            line-height: 1.3;
+            border-left: 4px solid var(--accent-blue);
+            flex-shrink: 0;
+        }
+        .status-header {
+            font-weight: 700;
+            font-size: 0.65rem;
+            color: var(--font-5-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+        .status-expira {
+            font-weight: 600;
+        }
+        .status-icon {
+            margin-right: 5px;
+        }
+        .text-warning-custom { color: var(--warning-light); }
+        .text-danger-custom { color: var(--danger); }
+        .text-success-custom { color: var(--chart-profit); }
+
+        .btn-whatsapp {
+            background: #25d366 !important; color: white !important; font-weight: 700; 
+            padding: 12px; border-radius: 8px; text-decoration: none; display: flex; 
+            align-items: center; justify-content: center; width: 100%; border: none; margin-top: 10px;
+        }
+        
+        /* CORREÇÕES DESKTOP (A PARTIR DE 992px) */
+        @media (min-width: 992px) { 
+            #sidebar {
+                transform: translateX(0) !important;
+                padding-top: 60px;
+            }
+            #main-wrapper { 
+                padding-left: 280px; /* Ajusta o padding para a sidebar fixa */
+            }
+            #menu-toggle {
+                display: none !important;
+            }
+            #sidebar > .px-4.py-2 {
+                display: none;
+            }
+            .top-menu-bar .logo-container {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <div id="modal-licenca" class="modal-overlay" style="z-index: 9999;">
+        <div class="card p-4 shadow-lg text-center" style="width: 90%; max-width: 450px; border: 2px solid var(--accent-blue);">
+            <i class="fas fa-lock mb-3" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
+            <h4 class="mb-2" style="font-weight: 800;">SISTEMA BLOQUEADO</h4>
+            <p id="status-licenca" style="color: var(--font-5-gray); font-size: 0.9rem;" class="mb-4">
+                Sua licença expirou ou não foi encontrada. Ative uma nova chave de acesso.
+            </p>
+            <label class="stat-label mb-2 d-block text-start">Código de Ativação</label>
+            <input type="password" id="activation_code" class="form-control mb-4 text-center" placeholder="Insira a chave de acesso aqui">
+            <div class="d-grid gap-2">
+                <button class="btn-action" onclick="validarChave()">ATIVAR SISTEMA</button>
+                <a href="https://wa.me/5561998692146?text=Olá, preciso de uma nova chave de acesso para o BlackSystem" target="_blank" class="btn-whatsapp">
+                    <i class="fab fa-whatsapp me-2"></i> FALAR COM VENDEDOR
+                </a>
+            </div>
+        </div>
+    </div>
     <div id="modal-overlay" class="modal-overlay">
         <div class="card p-4 shadow-lg" style="width: 90%; max-width: 450px;">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -187,13 +288,11 @@
             <i class="fas fa-exclamation-triangle mb-3" style="font-size: 2rem; color: var(--danger);"></i>
             <h5 class="mb-2" style="font-weight: 800; color: var(--font-20-white);">LIMPAR TUDO?</h5>
             <p style="color: var(--font-5-gray); font-size: 0.8rem;" class="mb-4">Isso apagará permanentemente todos os produtos e vendas do sistema.</p>
-            
             <label class="stat-label mb-2 d-block text-start">Senha de Administrador</label>
             <input type="password" id="reset_password" class="form-control mb-4 text-center" placeholder="••••">
-            
             <div class="d-flex gap-2">
-                <button class="btn btn-dark w-100" style="border-radius: 8px; font-weight: 600; font-size: 0.75rem;" onclick="fecharModalReset()">CANCELAR</button>
-                <button class="btn btn-danger w-100" style="border-radius: 8px; font-weight: 700; font-size: 0.75rem; background: var(--danger);" onclick="confirmarReset()">LIMPAR AGORA</button>
+                <button class="btn btn-dark w-100" onclick="fecharModalReset()">CANCELAR</button>
+                <button class="btn btn-danger w-100" style="background: var(--danger);" onclick="confirmarReset()">LIMPAR AGORA</button>
             </div>
         </div>
     </div>
@@ -219,12 +318,19 @@
             <li><a href="#" onclick="showSection('vendas')"><i class="fas fa-cart-plus"></i> Registrar Venda</a></li>
             <li><a href="#" onclick="showSection('estoque')"><i class="fas fa-boxes"></i> Estoque</a></li>
             <li><a href="#" onclick="showSection('cadastro')"><i class="fas fa-plus-circle"></i> Cadastrar Item</a></li>
-            <li class="px-4">
-                <button class="btn-danger-outline" onclick="abrirModalReset()">
-                    <i class="fas fa-trash-alt me-2"></i> Limpar Banco
-                </button>
-            </li>
         </ul>
+        <div id="license-status-card">
+            <div class="status-header">Status da Licença</div>
+            <div class="d-flex align-items-center">
+                <i class="status-icon fas fa-key" id="status-icon"></i>
+                <span id="status-expira" class="status-expira">Carregando...</span>
+            </div>
+        </div>
+        <div class="px-4 py-3" style="flex-shrink: 0;">
+            <button class="btn-danger-outline" onclick="abrirModalReset()">
+                <i class="fas fa-trash-alt me-2"></i> Limpar Banco
+            </button>
+        </div>
     </nav>
 
     <div id="main-wrapper">
@@ -245,13 +351,15 @@
                     <span style="font-weight: 700; font-size: 0.75rem; letter-spacing:1px">DESEMPENHO (LUCRO)</span>
                     <label class="switch"><input type="checkbox" id="toggleChart" onchange="updateChartVisibility()"><span class="slider"></span></label>
                 </div>
-                <div id="chartContainer"><canvas id="chartLinha"></canvas></div>
+                <div id="chartContainer" style="display: none;">
+                    <canvas id="chartLinha"></canvas>
+                </div>
             </div>
         </section>
 
         <section id="estoque" class="section d-none">
             <div class="card p-3 mb-3" style="border-left: 4px solid var(--accent-blue);">
-                <span class="stat-label">Investimento Total em Stock</span>
+                <span class="stat-label">Patrimônio Investido (Estoque Atual)</span>
                 <div class="stat-value" style="color:var(--accent-blue)" id="dash-investimento-estoque">R$ 0,00</div>
             </div>
             <div class="card p-3">
@@ -259,7 +367,13 @@
                     <table class="table align-middle" id="tbl-estoque">
                         <thead>
                             <tr style="font-size:0.65rem; color:var(--font-5-gray); text-transform:uppercase">
-                                <th>Produto</th><th class="text-center">Qtd</th><th>Custo</th><th>Venda</th><th>Margem</th><th class="text-center no-print">Ações</th>
+                                <th>Produto</th>
+                                <th class="text-center">Qtd</th>
+                                <th class="text-center">Vendido</th>
+                                <th class="text-end">Custo</th>
+                                <th class="text-end">Venda</th>
+                                <th class="text-end">Margem</th>
+                                <th class="text-center no-print">Ações</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -308,15 +422,139 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // --- LOGICA DE LICENCIAMENTO ---
+        const ONE_MINUTE_MS = 60 * 1000;
+        const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+        const LICENCE_MAP = { 
+            'BS-S': 7 * ONE_DAY_MS,     // 7 dias
+            'BS-Q': 15 * ONE_DAY_MS,    // 15 dias
+            'BS-M': 30 * ONE_DAY_MS,    // 30 dias
+            'BS-7M': 7 * ONE_MINUTE_MS  // 7 minutos (CHAVE DE TESTE)
+        };
+
+        function verificarLicenca() {
+            const licenca = JSON.parse(localStorage.getItem('bs_license'));
+            const agora = new Date().getTime();
+            
+            atualizarStatusLicenca(licenca);
+
+            if (!licenca || agora > licenca.expiraEm) {
+                // EXIBE A MODAL DE BLOQUEIO E APLICA O BLUR
+                document.getElementById('modal-licenca').style.display = 'flex';
+                document.getElementById('main-wrapper').style.pointerEvents = 'none';
+                document.getElementById('main-wrapper').style.filter = 'blur(8px)';
+                return false;
+            }
+            // LIBERA O SISTEMA
+            document.getElementById('modal-licenca').style.display = 'none';
+            document.getElementById('main-wrapper').style.pointerEvents = 'auto';
+            document.getElementById('main-wrapper').style.filter = 'none';
+            return true;
+        }
+
+        function atualizarStatusLicenca(licenca) {
+            const statusEl = document.getElementById('status-expira');
+            const iconEl = document.getElementById('status-icon');
+            const agora = new Date().getTime();
+
+            if (!licenca) {
+                statusEl.innerText = "Licença não encontrada.";
+                iconEl.className = "status-icon fas fa-lock text-danger-custom";
+                document.getElementById('license-status-card').style.borderLeftColor = 'var(--danger)';
+                return;
+            }
+
+            const diffTime = licenca.expiraEm - agora;
+            let displayTime;
+            
+            if (diffTime <= 0) {
+                statusEl.innerText = "EXPIRADA. Renove!";
+                iconEl.className = "status-icon fas fa-lock text-danger-custom";
+                document.getElementById('license-status-card').style.borderLeftColor = 'var(--danger)';
+                return;
+            }
+
+            // Exibir tempo em minutos/horas se for menor que 1 dia
+            if (diffTime < ONE_DAY_MS) {
+                const diffMinutes = Math.ceil(diffTime / ONE_MINUTE_MS);
+                if (diffMinutes >= 60) {
+                     const hours = Math.floor(diffMinutes / 60);
+                     const remainingMinutes = diffMinutes % 60;
+                     displayTime = `Expira em ${hours}h ${remainingMinutes}min.`;
+                } else if (diffMinutes > 0) {
+                    displayTime = `Expira em ${diffMinutes} minutos.`;
+                } else {
+                    displayTime = `Expira em segundos.`;
+                }
+                
+                // Aviso de expiração para licenças de curto prazo
+                if (diffMinutes <= 1) { 
+                    iconEl.className = "status-icon fas fa-exclamation-triangle text-danger-custom";
+                    document.getElementById('license-status-card').style.borderLeftColor = 'var(--danger)';
+                } else {
+                    iconEl.className = "status-icon fas fa-clock text-warning-custom";
+                    document.getElementById('license-status-card').style.borderLeftColor = 'var(--warning-light)';
+                }
+            } else {
+                // Cálculo e aviso para licenças de dias
+                const diffDays = Math.ceil(diffTime / ONE_DAY_MS);
+                const dataExpiracao = new Date(licenca.expiraEm).toLocaleDateString('pt-br');
+
+                if (diffDays <= 5) {
+                    displayTime = `Expira em ${diffDays} dias (${dataExpiracao}).`;
+                    iconEl.className = "status-icon fas fa-exclamation-triangle text-warning-custom";
+                    document.getElementById('license-status-card').style.borderLeftColor = 'var(--warning-light)';
+                } else {
+                    displayTime = `Expira em ${diffDays} dias.`;
+                    iconEl.className = "status-icon fas fa-check-circle text-success-custom";
+                    document.getElementById('license-status-card').style.borderLeftColor = 'var(--chart-profit)';
+                }
+            }
+            statusEl.innerText = displayTime;
+        }
+
+
+        function validarChave() {
+            const code = document.getElementById('activation_code').value.trim().toUpperCase();
+            const prefixo = code.split('-').slice(0, 2).join('-');
+            
+            if (LICENCE_MAP[prefixo]) {
+                const duracaoMs = LICENCE_MAP[prefixo];
+                const novaExpiracao = new Date().getTime() + duracaoMs;
+                localStorage.setItem('bs_license', JSON.stringify({ chave: code, expiraEm: novaExpiracao }));
+                alert("Sistema ativado com sucesso! Recarregando...");
+                location.reload();
+            } else {
+                alert("Código de ativação inválido!");
+            }
+        }
+
+        // --- SISTEMA ORIGINAL (Fluxo de Dados) ---
         let produtos = JSON.parse(localStorage.getItem('pp_prods')) || [];
+        // Garantindo que 'qtd' exista para compatibilidade
         let vendas = JSON.parse(localStorage.getItem('pp_vendas')) || [];
+        if (vendas.length > 0 && typeof vendas[0].qtd === 'undefined') {
+             vendas = vendas.map(v => ({...v, qtd: v.qtd || 0})); 
+        }
+
         let chartL = null;
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function toggleSidebar() { 
+            if(window.innerWidth < 992) {
+                document.getElementById('sidebar').classList.toggle('active'); 
+            }
+        }
+
         function manualThemeToggle() {
             const isLight = document.getElementById('themeSwitch').checked;
             document.body.classList.toggle('light-theme', isLight);
             if(chartL) initChart();
+            if (isLight) {
+                localStorage.setItem('themeSwitch', 'light');
+            } else {
+                localStorage.setItem('themeSwitch', 'dark');
+            }
         }
 
         function showSection(id) {
@@ -339,23 +577,15 @@
         }
 
         function fecharModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-
-        // NOVAS FUNÇÕES DO MODAL DE RESET
-        function abrirModalReset() { 
-            document.getElementById('reset_password').value = "";
-            document.getElementById('modal-reset').style.display = 'flex'; 
-        }
+        function abrirModalReset() { document.getElementById('reset_password').value = ""; document.getElementById('modal-reset').style.display = 'flex'; }
         function fecharModalReset() { document.getElementById('modal-reset').style.display = 'none'; }
         
         function confirmarReset() {
-            const senha = document.getElementById('reset_password').value;
-            if (senha === "123") {
+            // Senha de Administrador: 123
+            if (document.getElementById('reset_password').value === "123") {
                 localStorage.clear();
                 location.reload();
-            } else {
-                alert("Senha incorreta!");
-                document.getElementById('reset_password').value = "";
-            }
+            } else { alert("Senha incorreta!"); }
         }
 
         function salvarEdicao() {
@@ -379,7 +609,6 @@
             const unitNovoEl = document.getElementById('resumo-unitario-novo');
             const unitAntigoEl = document.getElementById('resumo-unitario-antigo');
             const totalEl = document.getElementById('resumo-total');
-
             if (p) {
                 const vOrig = p.venda;
                 const vDesc = vOrig * (1 - (descPerc / 100));
@@ -399,7 +628,16 @@
             if(!id) return alert("Selecione um produto!");
             if(p && p.estoque >= qtd) {
                 const vFinal = (p.venda * (1 - (descPerc / 100))) * qtd;
-                vendas.push({ prodId: id, lucro: vFinal - (p.custo * qtd), total: vFinal, gastoVenda: p.custo * qtd, data: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+                
+                vendas.push({ 
+                    prodId: id, 
+                    qtd: qtd, 
+                    lucro: vFinal - (p.custo * qtd), 
+                    total: vFinal, 
+                    gastoVenda: p.custo * qtd, 
+                    data: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
+                });
+                
                 p.estoque -= qtd;
                 saveAndRefresh();
                 showSection('home');
@@ -416,17 +654,50 @@
                 saveAndRefresh();
                 showSection('estoque');
                 document.getElementById('c_nome').value = '';
+                document.getElementById('c_custo').value = '';
+                document.getElementById('c_venda').value = '';
+                document.getElementById('c_est').value = '';
             }
         }
 
         function ocultarItem(id) { const p = produtos.find(x => x.id === id); if(p) { p.oculto = !p.oculto; saveAndRefresh(); } }
         function deletarItem(id) { if(confirm("Excluir permanentemente?")) { produtos = produtos.filter(p => p.id !== id); saveAndRefresh(); } }
-        function saveAndRefresh() { localStorage.setItem('pp_prods', JSON.stringify(produtos)); localStorage.setItem('pp_vendas', JSON.stringify(vendas)); refresh(); }
+        
+        // FUNÇÃO DE SALVAMENTO CORRIGIDA COM DIAGNÓSTICO DE ERRO
+        function saveAndRefresh() { 
+            try {
+                // Tenta salvar os dados no localStorage
+                localStorage.setItem('pp_prods', JSON.stringify(produtos)); 
+                localStorage.setItem('pp_vendas', JSON.stringify(vendas)); 
+                refresh();
+                console.log("Dados salvos com sucesso."); 
+            } catch (e) {
+                // Se falhar (ex: Modo Privado, Bloqueio da Licença que impede o clique no botão)
+                alert("ERRO DE SALVAMENTO: Não foi possível salvar os dados. Verifique se o seu navegador não está em 'Modo Privado' ou se a licença não expirou. Erro: " + e.message);
+                console.error("Erro ao salvar no localStorage:", e);
+                refresh();
+            }
+        }
 
         function refresh() {
             let fat = 0, luc = 0, qV = 0, gst = 0, inv = 0;
-            vendas.forEach(v => { fat += v.total; luc += v.lucro; qV++; gst += v.gastoVenda; });
-            produtos.forEach(p => { if(!p.oculto) inv += (p.custo * p.estoque); });
+            
+            // Estrutura para calcular o total vendido por ID de produto
+            const totalVendido = {};
+
+            vendas.forEach(v => { 
+                fat += v.total; 
+                luc += v.lucro; 
+                qV++; 
+                gst += v.gastoVenda; 
+                totalVendido[v.prodId] = (totalVendido[v.prodId] || 0) + v.qtd;
+            });
+
+            // Lógica de cálculo do Patrimônio Investido (valor do estoque atual ao custo)
+            produtos.forEach(p => { 
+                // Soma (Custo Unitário * Estoque Atual) apenas para produtos não ocultos
+                if(!p.oculto) inv += (p.custo * p.estoque); 
+            });
 
             document.getElementById('dash-fat').innerText = `R$ ${fat.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
             document.getElementById('dash-lucro').innerText = `R$ ${luc.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
@@ -439,9 +710,15 @@
                 tbody.innerHTML = '';
                 produtos.forEach(p => {
                     const margem = p.venda > 0 ? (((p.venda - p.custo) / p.venda) * 100).toFixed(1) : "0.0";
+                    const vendido = totalVendido[p.id] || 0; 
+
                     tbody.innerHTML += `<tr class="${p.oculto ? 'item-hidden' : ''}">
-                        <td><strong>${p.nome}</strong></td><td class="text-center"><strong>${p.estoque}</strong></td><td class="td-numeric">R$ ${p.custo.toFixed(2)}</td>
-                        <td class="td-numeric" style="color:var(--chart-profit)">R$ ${p.venda.toFixed(2)}</td><td class="td-numeric" style="color:var(--accent-blue)">${margem}%</td>
+                        <td><strong>${p.nome}</strong></td>
+                        <td class="text-center"><strong>${p.estoque}</strong></td>
+                        <td class="text-center"><strong>${vendido}</strong></td> 
+                        <td class="td-numeric">R$ ${p.custo.toFixed(2)}</td>
+                        <td class="td-numeric" style="color:var(--chart-profit)">R$ ${p.venda.toFixed(2)}</td>
+                        <td class="td-numeric" style="color:var(--accent-blue)">${margem}%</td>
                         <td class="text-center no-print">
                             <button class="btn-icon btn-edit" onclick="abrirModalEdicao(${p.id})"><i class="fas fa-edit"></i></button>
                             <button class="btn-icon btn-hide" onclick="ocultarItem(${p.id})"><i class="fas ${p.oculto ? 'fa-eye-slash' : 'fa-eye'}"></i></button>
@@ -454,32 +731,93 @@
                 sel.innerHTML = '<option value="">Selecionar produto...</option>';
                 produtos.forEach(p => { if(p.estoque > 0 && !p.oculto) sel.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} un)</option>`; });
             }
-            if(document.getElementById('toggleChart').checked) initChart();
+            
+            // Só inicializa o gráfico se o toggle estiver marcado
+            if (document.getElementById('home').classList.contains('d-none') === false && document.getElementById('toggleChart').checked) {
+                initChart();
+            }
         }
 
         function updateChartVisibility() {
             const isChecked = document.getElementById('toggleChart').checked;
             const container = document.getElementById('chartContainer');
-            if (isChecked) { container.classList.add('visible'); setTimeout(initChart, 400); }
-            else { container.classList.remove('visible'); }
+            container.style.display = isChecked ? 'block' : 'none';
+            if (isChecked) {
+                initChart();
+            } else if (chartL) {
+                chartL.destroy(); 
+                chartL = null;
+            }
         }
 
         function initChart() {
-            const canvas = document.getElementById('chartLinha'); if(!canvas) return;
-            const ctx = canvas.getContext('2d'); if(chartL) chartL.destroy();
+            const canvas = document.getElementById('chartLinha'); 
+            const container = document.getElementById('chartContainer');
+            if(!canvas || !container) return;
+
+            if(chartL) chartL.destroy();
+
             const isLight = document.body.classList.contains('light-theme');
+            const dataLength = vendas.length;
+            
+            const minWidth = container.offsetWidth; 
+            const calculatedWidth = dataLength * 80;
+            
+            // A largura do gráfico é o máximo entre a largura do container e a largura calculada
+            const chartWidth = Math.max(minWidth, calculatedWidth);
+            
+            canvas.style.width = chartWidth + 'px';
+            canvas.style.height = '300px'; 
+            
+            canvas.width = chartWidth;
+            canvas.height = 300;
+
+
+            const ctx = canvas.getContext('2d');
             chartL = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: vendas.map(v => v.data).slice(-10),
-                    datasets: [{ data: vendas.map(v => v.lucro).slice(-10), borderColor: '#00a2ff', backgroundColor: 'rgba(0, 162, 255, 0.1)', tension: 0.3, fill: true }]
+                    labels: vendas.map((v, index) => `Venda ${index + 1}: ${v.data}`), 
+                    datasets: [{ 
+                        data: vendas.map(v => v.lucro), 
+                        borderColor: '#00a2ff', 
+                        backgroundColor: 'rgba(0, 162, 255, 0.1)', 
+                        tension: 0.3, 
+                        fill: true 
+                    }]
                 },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: isLight ? '#eee' : '#1a1a1a' }, ticks: { color: isLight ? '#000' : '#808080' } }, x: { grid: { display: false }, ticks: { color: isLight ? '#000' : '#808080' } } } }
+                options: { 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false } 
+                    }, 
+                    scales: { 
+                        y: { 
+                            grid: { color: isLight ? '#eee' : '#1a1a1a' }, 
+                            ticks: { color: isLight ? '#000' : '#808080', callback: function(value) { return 'R$ ' + value.toFixed(2); } } 
+                        }, 
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: isLight ? '#000' : '#808080' } 
+                        } 
+                    } 
+                }
             });
+            // Rolagem automática para o final do gráfico
+            container.scrollLeft = container.scrollWidth;
         }
 
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-br', { weekday:'long', day:'numeric', month:'long' });
-        window.onload = refresh;
+        // Chamada de atualização de status a cada 30 segundos
+        setInterval(verificarLicenca, 30000); 
+
+        window.onload = () => {
+            if(verificarLicenca()) refresh();
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-br', { weekday:'long', day:'numeric', month:'long' });
+            if (localStorage.getItem('themeSwitch') === 'light') {
+                document.getElementById('themeSwitch').checked = true;
+                document.body.classList.add('light-theme');
+            }
+        };
     </script>
 </body>
 </html>
