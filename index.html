@@ -3,165 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackSystem | Premium Business</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>BLACKSYSTEM | Premium Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            color-scheme: light dark;
-            --bg-main: #000000;
-            --bg-card: #0d0d0d;
-            --sidebar-bg: #000000;
-            --top-bar-bg: #000000;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --border-color: #222222;
-            --input-bg: #151515;
-            --accent: #00a2ff;
-            --profit-green: #00ff88;
+            --bg-75-black: #000000;
+            --bg-card-75: #0a0a0a;
+            --bg-sidebar-gray: #151515;
+            --bg-input: #050505;
+            --font-20-white: #ffffff;
+            --font-5-gray: #808080;
+            --border-ui: #1a1a1a;
+            --accent-blue: #00a2ff;
+            --chart-profit: #00ff88;
+            --chart-info: #00a2ff;
+            --chart-expense: #ffdb4d;
+            --danger: #ff4d4d;
+            --logo-primary: #ffffff;
         }
 
         body.light-theme {
-            --bg-main: #f4f7f6;
-            --bg-card: #ffffff;
-            --sidebar-bg: #ffffff;
-            --top-bar-bg: #ffffff;
-            --text-main: #1a1a1a;
-            --text-muted: #666666;
-            --border-color: #dee2e6;
-            --input-bg: #ffffff;
+            --bg-75-black: #f0f2f5;
+            --bg-card-75: #ffffff;
+            --bg-sidebar-gray: #ffffff;
+            --bg-input: #ffffff;
+            --font-20-white: #1a1a1a;
+            --font-5-gray: #6c757d;
+            --border-ui: #dee2e6;
+            --logo-primary: #000000;
         }
 
         body { 
-            background-color: var(--bg-main); color: var(--text-main);
-            font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh;
-            display: flex; flex-direction: column; transition: all 0.3s ease;
+            background-color: var(--bg-75-black); 
+            color: var(--font-20-white);
+            font-family: 'Inter', sans-serif; 
+            margin: 0; transition: all 0.3s ease;
+            overflow-x: hidden;
         }
 
+        .form-control, .form-select {
+            background-color: var(--bg-input) !important;
+            color: var(--font-20-white) !important;
+            border: 1px solid var(--border-ui) !important;
+            border-radius: 8px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: none;
+        }
+
+        .logo-container { font-weight: 800; letter-spacing: 1px; }
+        .logo-black { color: var(--logo-primary); transition: color 0.3s ease; }
+        .logo-system { color: var(--font-5-gray); }
+
         .top-menu-bar {
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            background: var(--top-bar-bg); border-bottom: 1px solid var(--border-color);
-            z-index: 1100; display: flex; align-items: center; padding: 0 20px;
+            position: fixed; top: 0; width: 100%; height: 60px;
+            background: var(--bg-75-black); border-bottom: 1px solid var(--border-ui);
+            z-index: 1040; display: flex; align-items: center; padding: 0 20px;
             justify-content: space-between;
         }
 
-        #menu-toggle {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            color: var(--text-main); width: 42px; height: 42px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
-
         #sidebar { 
-            background: var(--sidebar-bg); height: 100vh; width: 260px; position: fixed; 
-            transition: transform 0.3s ease; z-index: 1050; left: 0; top: 0;
-            transform: translateX(-100%); border-right: 1px solid var(--border-color);
-            padding-top: 70px;
+            background: var(--bg-sidebar-gray); 
+            height: 100vh; width: 260px; position: fixed; 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 1050; left: 0; top: 0;
+            border-right: 1px solid var(--border-ui); 
+            padding-top: 20px;
+            transform: translateX(-100%);
         }
         #sidebar.active { transform: translateX(0); }
-
         #sidebar ul li a { 
-            padding: 15px 24px; display: flex; align-items: center;
-            color: var(--text-muted); text-decoration: none; font-weight: 500;
+            padding: 15px 24px; display: flex; align-items: center; 
+            color: var(--font-20-white); text-decoration: none; font-weight: 600; 
+            font-size: 0.8rem; text-transform: uppercase;
         }
-        #sidebar ul li a:hover, #sidebar ul li a.active { background: rgba(128,128,128,0.1); color: var(--text-main); }
+        #sidebar ul li a i { width: 30px; color: var(--font-5-gray); }
 
-        #main-wrapper { flex: 1; padding: 20px; padding-top: 85px; max-width: 1400px; margin: 0 auto; width: 100%; }
-        .page-header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .card { background: var(--bg-card-75); border: 1px solid var(--border-ui); border-radius: 12px; margin-bottom: 20px; }
+        .stat-label { color: var(--font-5-gray); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-weight: 800; font-size: 1.4rem; }
         
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 24px; }
-        .stat-card { padding: 20px; }
-        .stat-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-        .stat-value { font-size: 1.5rem; font-weight: 800; }
+        .btn-action { 
+            background: transparent !important; 
+            color: var(--font-20-white) !important; 
+            font-weight: 600; 
+            border: 1px solid var(--border-ui) !important; 
+            padding: 12px; 
+            width: 100%; 
+            border-radius: 8px; 
+            text-transform: uppercase; 
+            font-size: 0.75rem;
+            letter-spacing: 1.2px;
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover { 
+            border-color: var(--accent-blue) !important;
+            color: var(--accent-blue) !important;
+        }
 
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid rgba(128,128,128,0.1); }
-        .switch-container { display: flex; align-items: center; gap: 10px; }
-        .switch-container span { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-        
-        .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+        .btn-icon { background: none; border: none; padding: 5px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-edit { color: var(--accent-blue); }
+        .btn-delete { color: var(--danger); }
+        .btn-hide { color: var(--font-5-gray); }
+        .item-hidden { opacity: 0.3; filter: grayscale(1); }
+
+        .venda-resumo {
+            background: rgba(128, 128, 128, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-ui);
+        }
+
+        .preco-antigo { text-decoration: line-through; color: var(--font-5-gray); font-size: 0.8rem; margin-right: 8px; }
+
+        .table { color: inherit !important; font-size: 0.85rem; }
+        .td-numeric { font-weight: 600; font-size: 0.85rem; }
+        .badge-qtd { background: none !important; border: none !important; color: inherit !important; font-weight: 700; font-size: 0.85rem; padding: 0; }
+
+        /* MODAL CUSTOMIZADO */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+        }
+        #modal-edit-card { width: 90%; max-width: 450px; }
+
+        .btn-danger-outline {
+            background: transparent; border: none; color: var(--danger);
+            font-size: 0.65rem; font-weight: 700; padding: 10px; width: 100%;
+            margin-top: 10px; text-transform: uppercase; opacity: 0.6; transition: 0.3s;
+        }
+        .btn-danger-outline:hover { opacity: 1; }
+
+        .btn-print {
+            background: none; color: var(--font-20-white);
+            border: 1px solid var(--border-ui); padding: 5px 15px;
+            font-size: 0.65rem; font-weight: 700; border-radius: 6px;
+        }
+
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(14px); }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-blue); }
+        input:checked + .slider:before { transform: translateX(16px); }
 
-        #chartContainer { transition: opacity 0.4s ease, transform 0.4s ease; opacity: 0; transform: translateY(10px); pointer-events: none; }
-        #chartContainer.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        #chartContainer { height: 0; opacity: 0; overflow: hidden; transition: 0.4s ease; }
+        #chartContainer.visible { height: 300px; opacity: 1; margin-top: 20px; }
 
-        .btn-action { background: var(--text-main); color: var(--bg-main); font-weight: 700; border-radius: 8px; padding: 12px; border: none; width: 100%; text-transform: uppercase; }
-        .form-control, .form-select { background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; }
-
-        /* Estilo da Tabela */
-        .table { color: var(--text-main); }
-        .table thead th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
-        .table td { vertical-align: middle; border-bottom: 1px solid var(--border-color); padding: 15px 10px; }
-        .text-profit { color: var(--profit-green); font-weight: 700; }
+        #main-wrapper { padding: 20px; padding-top: 85px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
         @media (min-width: 992px) { #sidebar.active ~ #main-wrapper { padding-left: 280px; } }
     </style>
 </head>
 <body>
 
-    <div class="top-menu-bar">
-        <div class="d-flex align-items-center">
-            <div id="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
-            <div class="ms-3 fw-bold small" style="letter-spacing: 2px;">BLACKSYSTEM</div>
+    <div id="modal-overlay">
+        <div class="card p-4 shadow-lg" id="modal-edit-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="m-0" style="font-weight: 800; letter-spacing: 1px;">EDITAR PRODUTO</h5>
+                <i class="fas fa-times" style="cursor:pointer; color:var(--font-5-gray)" onclick="fecharModal()"></i>
+            </div>
+            <input type="hidden" id="edit_id">
+            <label class="stat-label mb-2">Nome do Produto</label>
+            <input type="text" id="edit_nome" class="form-control mb-3">
+            <div class="row g-2 mb-3">
+                <div class="col-6"><label class="stat-label mb-2">Custo Unit.</label><input type="number" id="edit_custo" class="form-control"></div>
+                <div class="col-6"><label class="stat-label mb-2">Venda Unit.</label><input type="number" id="edit_venda" class="form-control"></div>
+            </div>
+            <label class="stat-label mb-2">Quantidade em Estoque</label>
+            <input type="number" id="edit_est" class="form-control mb-4">
+            <button class="btn-action" onclick="salvarEdicao()">Salvar Alterações</button>
         </div>
-        <div class="switch-container">
-            <span>Tema Claro</span>
+    </div>
+
+    <div class="top-menu-bar">
+        <div class="d-flex align-items-center gap-2">
+            <button id="menu-toggle" onclick="toggleSidebar()" style="background:none; border:none; color:inherit;"><i class="fas fa-bars"></i></button>
+            <div class="logo-container"><span class="logo-black">BLACK</span><span class="logo-system">SYSTEM</span></div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-print" onclick="window.print()"><i class="fas fa-print me-1"></i> IMPRIMIR</button>
             <label class="switch"><input type="checkbox" id="themeSwitch" onchange="manualThemeToggle()"><span class="slider"></span></label>
         </div>
     </div>
 
     <nav id="sidebar">
-        <div class="p-4 fw-bold border-bottom border-secondary border-opacity-25 text-muted">NAVEGAÇÃO</div>
-        <ul class="list-unstyled mb-0">
-            <li><a href="#" onclick="showSection('home')" class="nav-item active"><i class="fas fa-chart-line me-2"></i> DASHBOARD</a></li>
-            <li><a href="#" onclick="showSection('vendas')" class="nav-item"><i class="fas fa-shopping-cart me-2"></i> VENDAS</a></li>
-            <li><a href="#" onclick="showSection('estoque')" class="nav-item"><i class="fas fa-boxes-stacked me-2"></i> ESTOQUE</a></li>
-            <li><a href="#" onclick="showSection('cadastro')" class="nav-item"><i class="fas fa-plus-circle me-2"></i> CADASTRAR</a></li>
-        </ul>
-        <div class="p-4 mt-auto border-top border-secondary border-opacity-25 text-center">
-            <button class="btn btn-sm btn-outline-danger w-100" onclick="limparSistema()" style="font-size: 0.7rem; font-weight: 700;">RESETAR SISTEMA</button>
+        <div class="px-4 py-2 d-flex justify-content-between align-items-center">
+            <div class="logo-container"><span class="logo-black">BLACK</span><span class="logo-system">SYSTEM</span></div>
+            <i class="fas fa-times" style="cursor:pointer; color:gray" onclick="toggleSidebar()"></i>
         </div>
+        <ul class="list-unstyled">
+            <li><a href="#" onclick="showSection('home')"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="#" onclick="showSection('vendas')"><i class="fas fa-cart-plus"></i> Registrar Venda</a></li>
+            <li><a href="#" onclick="showSection('estoque')"><i class="fas fa-boxes"></i> Estoque</a></li>
+            <li><a href="#" onclick="showSection('cadastro')"><i class="fas fa-plus-circle"></i> Cadastrar Item</a></li>
+            <li class="px-4">
+                <button class="btn-danger-outline" onclick="resetDatabase()">
+                    <i class="fas fa-trash-alt me-2"></i> Limpar Banco
+                </button>
+            </li>
+        </ul>
     </nav>
 
     <div id="main-wrapper">
-        <header class="page-header">
-            <h2 class="fw-extrabold m-0" id="page-title">DASHBOARD</h2>
-            <p id="current-date" class="small m-0 text-muted mt-1"></p>
+        <header class="page-header mb-4">
+            <h2 id="page-title" style="font-weight:800">DASHBOARD</h2>
+            <p id="current-date" class="m-0" style="color: var(--font-5-gray); font-size: 0.85rem;"></p>
         </header>
 
         <section id="home" class="section">
             <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Faturamento</span><div class="stat-value text-success" id="dash-fat">R$ 0,00</div></div></div>
-                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Lucro Líquido</span><div class="stat-value text-info" id="dash-lucro">R$ 0,00</div></div></div>
-                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Total Saídas</span><div class="stat-value" id="dash-vendas-count">0</div></div></div>
-                <div class="col-6 col-md-3"><div class="card stat-card"><span class="stat-label">Gastos Totais</span><div class="stat-value text-warning" id="dash-custos">R$ 0,00</div></div></div>
+                <div class="col-6 col-md-3"><div class="card p-3"><span class="stat-label">Faturamento</span><div class="stat-value" style="color:var(--chart-profit)" id="dash-fat">R$ 0,00</div></div></div>
+                <div class="col-6 col-md-3"><div class="card p-3"><span class="stat-label">Lucro Líquido</span><div class="stat-value" style="color:var(--chart-info)" id="dash-lucro">R$ 0,00</div></div></div>
+                <div class="col-6 col-md-3"><div class="card p-3"><span class="stat-label">Vendas</span><div class="stat-value" id="dash-vendas-count">0</div></div></div>
+                <div class="col-6 col-md-3"><div class="card p-3"><span class="stat-label">CMV (Custos)</span><div class="stat-value" style="color:var(--chart-expense)" id="dash-gastos-home">R$ 0,00</div></div></div>
             </div>
-            
             <div class="card p-4">
-                <div class="chart-header">
-                    <div class="switch-container"><span>Mostrar Lucro</span><label class="switch"><input type="checkbox" id="toggleChart" onchange="updateChartVisibility()"><span class="slider"></span></label></div>
-                    <h6 class="fw-bold m-0 text-muted small"></h6>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span style="font-weight: 700; font-size: 0.75rem; letter-spacing:1px">DESEMPENHO (LUCRO)</span>
+                    <label class="switch"><input type="checkbox" id="toggleChart" onchange="updateChartVisibility()"><span class="slider"></span></label>
                 </div>
-                <div id="chartContainer" style="height: 320px;"><canvas id="chartLinha"></canvas></div>
+                <div id="chartContainer"><canvas id="chartLinha"></canvas></div>
             </div>
         </section>
 
         <section id="estoque" class="section d-none">
+            <div class="card p-3 mb-3" style="border-left: 4px solid var(--accent-blue);">
+                <span class="stat-label">Investimento Total em Stock</span>
+                <div class="stat-value" style="color:var(--accent-blue)" id="dash-investimento-estoque">R$ 0,00</div>
+            </div>
             <div class="card p-3">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="tbl-estoque">
+                    <table class="table align-middle" id="tbl-estoque">
                         <thead>
-                            <tr>
-                                <th>Produto</th>
-                                <th class="text-center">Disponível</th>
-                                <th class="text-center">Saídas</th>
-                                <th>Custo</th>
-                                <th>Venda</th>
-                                <th class="text-end">Margem (%)</th>
+                            <tr style="font-size:0.65rem; color:var(--font-5-gray); text-transform:uppercase">
+                                <th>Produto</th><th class="text-center">Qtd</th><th>Custo</th><th>Venda</th><th>Margem</th><th class="text-center no-print">Ações</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -171,11 +254,40 @@
         </section>
 
         <section id="vendas" class="section d-none">
-            <div class="card p-4 mx-auto" style="max-width: 400px;"><h5 class="fw-bold mb-3 text-center">Lançar Venda</h5><label class="small text-muted mb-1">Escolha o Item</label><select id="v_prod" class="form-select mb-3"></select><label class="small text-muted mb-1">Quantidade</label><input type="number" id="v_qtd" class="form-control mb-3" value="1"><button class="btn-action" onclick="finalizarVenda()">Confirmar Venda</button></div>
+            <div class="card p-4 mx-auto" style="max-width: 450px;">
+                <label class="stat-label mb-2">Produto</label>
+                <select id="v_prod" class="form-select mb-3" onchange="calcularResumoVenda()"></select>
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><label class="stat-label mb-2">Quantidade</label><input type="number" id="v_qtd" class="form-control" value="1" oninput="calcularResumoVenda()"></div>
+                    <div class="col-6"><label class="stat-label mb-2">Desconto (%)</label><input type="number" id="v_desc" class="form-control" value="0" min="0" max="100" oninput="calcularResumoVenda()"></div>
+                </div>
+                <div class="venda-resumo">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="stat-label">Valor Unitário:</span>
+                        <div><span id="resumo-unitario-antigo" class="preco-antigo"></span><span id="resumo-unitario-novo" style="font-weight:700">R$ 0,00</span></div>
+                    </div>
+                    <hr style="border-color: var(--border-ui); opacity: 0.3; margin: 10px 0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="stat-label">Total a Pagar:</span>
+                        <span id="resumo-total" style="font-weight:800; color:var(--chart-profit); font-size:1.2rem">R$ 0,00</span>
+                    </div>
+                </div>
+                <button class="btn-action" onclick="finalizarVenda()">Confirmar Venda</button>
+            </div>
         </section>
 
         <section id="cadastro" class="section d-none">
-            <div class="card p-4 mx-auto" style="max-width: 400px;"><h5 class="fw-bold mb-3 text-center">Novo Produto</h5><input type="text" id="c_nome" class="form-control mb-2" placeholder="Nome"><input type="number" id="c_custo" class="form-control mb-2" placeholder="Custo (R$)"><input type="number" id="c_venda" class="form-control mb-2" placeholder="Venda (R$)"><input type="number" id="c_est" class="form-control mb-3" placeholder="Estoque Inicial"><button class="btn-action" onclick="cadastrarItem()">Cadastrar</button></div>
+            <div class="card p-4 mx-auto" style="max-width: 450px;">
+                <label class="stat-label mb-2">Nome do Produto</label>
+                <input type="text" id="c_nome" class="form-control mb-3">
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><label class="stat-label mb-2">Custo Unit.</label><input type="number" id="c_custo" class="form-control"></div>
+                    <div class="col-6"><label class="stat-label mb-2">Venda Unit.</label><input type="number" id="c_venda" class="form-control"></div>
+                </div>
+                <label class="stat-label mb-2">Estoque Inicial</label>
+                <input type="number" id="c_est" class="form-control mb-4">
+                <button class="btn-action" onclick="cadastrarItem()">Cadastrar Produto</button>
+            </div>
         </section>
     </div>
 
@@ -185,34 +297,81 @@
         let vendas = JSON.parse(localStorage.getItem('pp_vendas')) || [];
         let chartL = null;
 
-        // TEMA
-        const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
-        function applyTheme(isLight) {
-            if (isLight) document.body.classList.add('light-theme');
-            else document.body.classList.remove('light-theme');
-            document.getElementById('themeSwitch').checked = isLight;
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function manualThemeToggle() {
+            const isLight = document.getElementById('themeSwitch').checked;
+            document.body.classList.toggle('light-theme', isLight);
             if(chartL) initChart();
         }
-        function manualThemeToggle() { applyTheme(document.getElementById('themeSwitch').checked); }
-        applyTheme(themeMedia.matches);
-        themeMedia.addEventListener('change', (e) => applyTheme(e.matches));
-
-        function updateChartVisibility() {
-            const isChecked = document.getElementById('toggleChart').checked;
-            const container = document.getElementById('chartContainer');
-            if (isChecked) { container.classList.add('visible'); initChart(); }
-            else { container.classList.remove('visible'); }
-        }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.add('d-none'));
-            document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
             document.getElementById(id).classList.remove('d-none');
             document.getElementById('page-title').innerText = id.toUpperCase();
             if(window.innerWidth < 992) document.getElementById('sidebar').classList.remove('active');
             refresh();
+        }
+
+        /* FUNÇÕES DE MODAL */
+        function abrirModalEdicao(id) {
+            const p = produtos.find(x => x.id === id);
+            if(!p) return;
+            document.getElementById('edit_id').value = p.id;
+            document.getElementById('edit_nome').value = p.nome;
+            document.getElementById('edit_custo').value = p.custo;
+            document.getElementById('edit_venda').value = p.venda;
+            document.getElementById('edit_est').value = p.estoque;
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function fecharModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+
+        function salvarEdicao() {
+            const id = parseInt(document.getElementById('edit_id').value);
+            const p = produtos.find(x => x.id === id);
+            if(p) {
+                p.nome = document.getElementById('edit_nome').value;
+                p.custo = parseFloat(document.getElementById('edit_custo').value) || 0;
+                p.venda = parseFloat(document.getElementById('edit_venda').value) || 0;
+                p.estoque = parseInt(document.getElementById('edit_est').value) || 0;
+                saveAndRefresh();
+                fecharModal();
+            }
+        }
+
+        function calcularResumoVenda() {
+            const id = parseInt(document.getElementById('v_prod').value);
+            const qtd = parseInt(document.getElementById('v_qtd').value) || 0;
+            const descPerc = parseFloat(document.getElementById('v_desc').value) || 0;
+            const p = produtos.find(x => x.id === id);
+            const unitNovoEl = document.getElementById('resumo-unitario-novo');
+            const unitAntigoEl = document.getElementById('resumo-unitario-antigo');
+            const totalEl = document.getElementById('resumo-total');
+
+            if (p) {
+                const vOrig = p.venda;
+                const vDesc = vOrig * (1 - (descPerc / 100));
+                unitAntigoEl.innerText = descPerc > 0 ? `R$ ${vOrig.toFixed(2)}` : "";
+                unitNovoEl.innerText = `R$ ${vDesc.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+                totalEl.innerText = `R$ ${(vDesc * qtd).toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+            } else {
+                unitAntigoEl.innerText = ""; unitNovoEl.innerText = "R$ 0,00"; totalEl.innerText = "R$ 0,00";
+            }
+        }
+
+        function finalizarVenda() {
+            const id = parseInt(document.getElementById('v_prod').value);
+            const qtd = parseInt(document.getElementById('v_qtd').value);
+            const descPerc = parseFloat(document.getElementById('v_desc').value) || 0;
+            const p = produtos.find(x => x.id === id);
+            if(!id) return alert("Selecione um produto!");
+            if(p && p.estoque >= qtd) {
+                const vFinal = (p.venda * (1 - (descPerc / 100))) * qtd;
+                vendas.push({ prodId: id, lucro: vFinal - (p.custo * qtd), total: vFinal, gastoVenda: p.custo * qtd, data: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+                p.estoque -= qtd;
+                saveAndRefresh();
+                showSection('home');
+            } else { alert("Estoque insuficiente!"); }
         }
 
         function cadastrarItem() {
@@ -221,95 +380,75 @@
             const venda = parseFloat(document.getElementById('c_venda').value) || 0;
             const est = parseInt(document.getElementById('c_est').value) || 0;
             if(nome) {
-                produtos.push({ id: Date.now(), nome, custo, venda, estoque: est });
-                localStorage.setItem('pp_prods', JSON.stringify(produtos));
-                showSection('home');
+                produtos.push({ id: Date.now(), nome, custo, venda, estoque: est, oculto: false });
+                saveAndRefresh();
+                showSection('estoque');
+                document.getElementById('c_nome').value = '';
             }
         }
 
-        function finalizarVenda() {
-            const id = parseInt(document.getElementById('v_prod').value);
-            const qtd = parseInt(document.getElementById('v_qtd').value);
-            const p = produtos.find(x => x.id === id);
-            if(p && p.estoque >= qtd) {
-                vendas.push({ prodId: id, lucro: (p.venda - p.custo) * qtd, total: p.venda * qtd, custo: p.custo * qtd, qtd: qtd, data: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-                p.estoque -= qtd;
-                localStorage.setItem('pp_prods', JSON.stringify(produtos));
-                localStorage.setItem('pp_vendas', JSON.stringify(vendas));
-                showSection('home');
-            }
-        }
+        function ocultarItem(id) { const p = produtos.find(x => x.id === id); if(p) { p.oculto = !p.oculto; saveAndRefresh(); } }
+        function deletarItem(id) { if(confirm("Excluir permanentemente?")) { produtos = produtos.filter(p => p.id !== id); saveAndRefresh(); } }
+        function saveAndRefresh() { localStorage.setItem('pp_prods', JSON.stringify(produtos)); localStorage.setItem('pp_vendas', JSON.stringify(vendas)); refresh(); }
 
         function refresh() {
-            let f=0, l=0, c=0, q=0;
-            vendas.forEach(v => { f += v.total; l += v.lucro; c += v.custo; q += v.qtd; });
-            document.getElementById('dash-fat').innerText = `R$ ${f.toFixed(2)}`;
-            document.getElementById('dash-lucro').innerText = `R$ ${l.toFixed(2)}`;
-            document.getElementById('dash-vendas-count').innerText = q;
-            document.getElementById('dash-custos').innerText = `R$ ${c.toFixed(2)}`;
-            
+            let fat = 0, luc = 0, qV = 0, gst = 0, inv = 0;
+            vendas.forEach(v => { fat += v.total; luc += v.lucro; qV++; gst += v.gastoVenda; });
+            produtos.forEach(p => { if(!p.oculto) inv += (p.custo * p.estoque); });
+
+            document.getElementById('dash-fat').innerText = `R$ ${fat.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+            document.getElementById('dash-lucro').innerText = `R$ ${luc.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+            document.getElementById('dash-vendas-count').innerText = qV;
+            document.getElementById('dash-gastos-home').innerText = `R$ ${gst.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+            document.getElementById('dash-investimento-estoque').innerText = `R$ ${inv.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+
             const tbody = document.querySelector('#tbl-estoque tbody');
             if(tbody) {
                 tbody.innerHTML = '';
                 produtos.forEach(p => {
-                    const saidas = vendas.filter(v => v.prodId === p.id).reduce((acc, curr) => acc + curr.qtd, 0);
-                    const margem = p.custo > 0 ? (((p.venda - p.custo) / p.custo) * 100).toFixed(1) : "0";
-                    
-                    tbody.innerHTML += `<tr>
-                        <td><strong>${p.nome}</strong></td>
-                        <td class="text-center">${p.estoque}</td>
-                        <td class="text-center text-muted">${saidas}</td>
-                        <td>R$ ${p.custo.toFixed(2)}</td>
-                        <td>R$ ${p.venda.toFixed(2)}</td>
-                        <td class="text-end text-profit">${margem}%</td>
-                    </tr>`;
+                    const margem = p.venda > 0 ? (((p.venda - p.custo) / p.venda) * 100).toFixed(1) : "0.0";
+                    tbody.innerHTML += `<tr class="${p.oculto ? 'item-hidden' : ''}">
+                        <td><strong>${p.nome}</strong></td><td class="text-center"><strong>${p.estoque}</strong></td><td class="td-numeric">R$ ${p.custo.toFixed(2)}</td>
+                        <td class="td-numeric" style="color:var(--chart-profit)">R$ ${p.venda.toFixed(2)}</td><td class="td-numeric" style="color:var(--accent-blue)">${margem}%</td>
+                        <td class="text-center no-print">
+                            <button class="btn-icon btn-edit" onclick="abrirModalEdicao(${p.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon btn-hide" onclick="ocultarItem(${p.id})"><i class="fas ${p.oculto ? 'fa-eye-slash' : 'fa-eye'}"></i></button>
+                            <button class="btn-icon btn-delete" onclick="deletarItem(${p.id})"><i class="fas fa-trash"></i></button>
+                        </td></tr>`;
                 });
             }
-
             const sel = document.getElementById('v_prod');
             if(sel) {
-                sel.innerHTML = '<option value="">Selecionar...</option>';
-                produtos.forEach(p => { if(p.estoque > 0) sel.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} disp.)</option>`; });
+                sel.innerHTML = '<option value="">Selecionar produto...</option>';
+                produtos.forEach(p => { if(p.estoque > 0 && !p.oculto) sel.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} un)</option>`; });
             }
-
             if(document.getElementById('toggleChart').checked) initChart();
         }
 
+        function updateChartVisibility() {
+            const isChecked = document.getElementById('toggleChart').checked;
+            const container = document.getElementById('chartContainer');
+            if (isChecked) { container.classList.add('visible'); setTimeout(initChart, 400); }
+            else { container.classList.remove('visible'); }
+        }
+
         function initChart() {
-            const canvas = document.getElementById('chartLinha');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById('chartLinha'); if(!canvas) return;
+            const ctx = canvas.getContext('2d'); if(chartL) chartL.destroy();
             const isLight = document.body.classList.contains('light-theme');
-            if(chartL) chartL.destroy();
             chartL = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: vendas.map(v => v.data).slice(-10),
-                    datasets: [{
-                        data: vendas.map(v => v.lucro).slice(-10),
-                        borderColor: '#00a2ff',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(0, 162, 255, 0.05)',
-                        pointRadius: 4,
-                        pointBackgroundColor: '#00a2ff'
-                    }]
+                    datasets: [{ data: vendas.map(v => v.lucro).slice(-10), borderColor: '#00a2ff', backgroundColor: 'rgba(0, 162, 255, 0.1)', tension: 0.3, fill: true }]
                 },
-                options: {
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: isLight ? '#e0e0e0' : '#1a1a1a' }, ticks: { color: isLight ? '#666' : '#888' } },
-                        x: { grid: { display: false }, ticks: { color: isLight ? '#666' : '#888' } }
-                    }
-                }
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: isLight ? '#eee' : '#1a1a1a' }, ticks: { color: isLight ? '#000' : '#808080' } }, x: { grid: { display: false }, ticks: { color: isLight ? '#000' : '#808080' } } } }
             });
         }
 
-        function limparSistema() { if(confirm("Deseja resetar todos os dados?")) { localStorage.clear(); location.reload(); } }
+        function resetDatabase() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-br', { weekday:'long', day:'numeric', month:'long' });
-        window.onload = () => { document.getElementById('toggleChart').checked = false; refresh(); };
+        window.onload = refresh;
     </script>
 </body>
 </html>
